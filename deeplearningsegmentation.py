@@ -227,7 +227,7 @@ def test_model(batch_size_,restore):
     plt.show()
  
 if __name__=='__main__':
-  restore = True  
+  restore = False  
   batch_size_ = 4
   #test_data(batch_size_)
   test_model(batch_size_,restore)
