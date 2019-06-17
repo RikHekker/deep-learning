@@ -33,8 +33,10 @@ def gen(datasettype):
   #path2 = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testlabels/*'
   #path='kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit_trainvaltest/leftImg8bit/train/b*/*' 
   #path2='kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*' 
+  
   path='/home/kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit/train/b*/*' 
-  path2='/home/kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*'
+  path2='/home/kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*' 
+  
   images_path=glob.glob(path)#glob.glob(path+"/leftImg8bit/train/aachen/*")
   images_path=[x.encode('utf-8') for x in images_path]  
   labels_path=glob.glob(path2)#glob.glob(path+"/gtFine_trainvaltest/gtFine/train/aachen/aachen_[]_gtFine_labellds.png")
