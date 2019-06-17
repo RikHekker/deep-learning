@@ -28,9 +28,12 @@ def gen(datasettype):
 # =============================================================================
   #path = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/leftImg8bit_trainvaltest/leftImg8bit/train/aachen/aachen_000000_000019_leftImg8bit*'
   #path2 = "D:/s141533/NeuralNetworks/TrainingSetCityScapes/gtFine/train/aachen/aachen_000000_000019_gtFine_labelIds*"
-  path = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testimg/*'
-  path2 = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testlabels/*'
- 
+  
+  #path = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testimg/*'
+  #path2 = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testlabels/*'
+  path='kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit_trainvaltest/leftImg8bit/train/b*/*' 
+  path2='kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*' 
+  
   images_path=glob.glob(path)#glob.glob(path+"/leftImg8bit/train/aachen/*")
   images_path=[x.encode('utf-8') for x in images_path]  
   labels_path=glob.glob(path2)#glob.glob(path+"/gtFine_trainvaltest/gtFine/train/aachen/aachen_[]_gtFine_labellds.png")
