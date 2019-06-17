@@ -31,9 +31,10 @@ def gen(datasettype):
   
   #path = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testimg/*'
   #path2 = 'D:/s141533/NeuralNetworks/TrainingSetCityScapes/Testlabels/*'
-  path='kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit_trainvaltest/leftImg8bit/train/b*/*' 
-  path2='kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*' 
-  
+  #path='kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit_trainvaltest/leftImg8bit/train/b*/*' 
+  #path2='kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*' 
+  path='/home/kaasbomber/deep-learning/TrainingSetCityScapes/leftImg8bit/train/b*/*' 
+  path2='/home/kaasbomber/deep-learning/TrainingSetCityScapes/gtFine/train/b*/*labelIds*'
   images_path=glob.glob(path)#glob.glob(path+"/leftImg8bit/train/aachen/*")
   images_path=[x.encode('utf-8') for x in images_path]  
   labels_path=glob.glob(path2)#glob.glob(path+"/gtFine_trainvaltest/gtFine/train/aachen/aachen_[]_gtFine_labellds.png")
@@ -85,22 +86,42 @@ def test_data(batch_size_):
   plt.imshow(label)
   plt.show()
 
-def sparse_Mean_IOU(y_true, y_pred):
-    nb_classes = K.int_shape(y_pred)[-1]
+def sparse_Mean_IOU(y_true, y_pred, class_id):
     iou = []
     pred_pixels = K.argmax(y_pred, axis=-1)
-    for i in range(0, nb_classes): # exclude first label (background) and last label (void)
-        true_labels = K.equal(y_true[:,:,0], i)
-        pred_labels = K.equal(pred_pixels, i)
-        inter = tf.to_int32(true_labels & pred_labels)
-        union = tf.to_int32(true_labels | pred_labels)
-        legal_batches = K.sum(tf.to_int32(true_labels), axis=1)>0
-        ious = K.sum(inter, axis=1)/K.sum(union, axis=1)
-        iou.append(K.mean(tf.gather(ious, indices=tf.where(legal_batches)))) # returns average IoU of the same objects
+    i=class_id
+    true_labels = K.equal(y_true[:,:,0], i)
+    pred_labels = K.equal(pred_pixels, i)
+    inter = tf.to_int32(true_labels & pred_labels)
+    union = tf.to_int32(true_labels | pred_labels)
+    legal_batches = K.sum(tf.to_int32(true_labels), axis=1)>0
+    ious = K.sum(inter, axis=1)/K.sum(union, axis=1)
+    iou.append(K.mean(tf.gather(ious, indices=tf.where(legal_batches)))) # returns average IoU of the same objects
     iou = tf.stack(iou)
     legal_labels = ~tf.debugging.is_nan(iou)
     iou = tf.gather(iou, indices=tf.where(legal_labels))
     return K.mean(iou)
+
+def fn0(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,0)	
+def fn1(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,1)	
+def fn2(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,2)	
+def fn3(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,3)	
+def fn4(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,4)	
+def fn5(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,5)	
+def fn6(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,6)	
+def fn7(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,7)	
+def fn8(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,8)	
+def fn9(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,9)	
+def fn10(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,10)	
+def fn11(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,11)
+def fn12(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,12)	
+def fn13(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,13)	
+def fn14(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,14)	
+def fn15(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,15)	
+def fn16(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,16)	
+def fn17(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,17)	
+def fn18(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,18)	
+def fn19(y_true, y_pred):return sparse_Mean_IOU(y_true,y_pred,19)	
 
 # =============================================================================
 # def Mean_IOU(y_true, y_pred):
@@ -131,6 +152,7 @@ def TheModel(batch_size_,restore):
 # =============================================================================
   dataset=input_fn(batch_size_,datasettype = 'train')
   datasetval = input_fn(batch_size_,datasettype = 'validation')
+  metrics =["accuracy",fn0,fn1,fn2,fn3,fn4,fn5,fn6,fn7,fn8,fn9,fn10,fn11, fn12, fn13, fn14, fn15, fn16,fn17,fn18,fn19]
   if restore == True:
       model = tf.contrib.saved_model.load_keras_model('./saved_models/1560507394')
   else:
@@ -152,10 +174,11 @@ def TheModel(batch_size_,restore):
   sgd = tf.keras.optimizers.SGD(starter_learning_rate, momentum=0.8, nesterov=True)
   model.compile(optimizer=sgd,   #SGD with momemtum usually gives good enough results without too many parameters as is the case for ADAMoptimizer
                 loss=tf.keras.losses.CategoricalCrossentropy(from_logits = True), #https://gombru.github.io/2018/05/23/cross_entropy_loss/ This site gives good info about how it works it is basically a sofmax function on the groundtruth scores for the classes followed by the cross-entropy loss on the result. The CE simply calculates a score for a ground truths of all classes compared with the log of s ground truth. CE = -log ( \frac{e^{s_{p}}}{\sum_{j}^{C} e^{s_{j}}} 
-                metrics=[sparse_Mean_IOU]) #accuracy = (tp + tn) / (tp + fp + fn + tn), precision = TP / (TP + FP), recall = TP / (TP + FN) with TP = tf.count_nonzero(predicted * actual) TN = tf.count_nonzero((predicted - 1) * (actual - 1)) FP = tf.count_nonzero(predicted * (actual - 1)) FN = tf.count_nonzero((predicted - 1) * actual), rmse : root of squared differences between scores and ground truths  
+                metrics=metrics) #accuracy = (tp + tn) / (tp + fp + fn + tn), precision = TP / (TP + FP), recall = TP / (TP + FN) with TP = tf.count_nonzero(predicted * actual) TN = tf.count_nonzero((predicted - 1) * (actual - 1)) FP = tf.count_nonzero(predicted * (actual - 1)) FN = tf.count_nonzero((predicted - 1) * actual), rmse : root of squared differences between scores and ground truths  
   history=model.fit(dataset, epochs=2, steps_per_epoch=1) #174/6 for Aachen - 2975 Training Images - 1525 Test Images - 500 validation Images
   #history=model.fit(dataset,validation_data=datasetval, epochs=2, steps_per_epoch=103,validation_steps=14) #174/6 for Aachen - 2975 Training Images - 1525 Test Images - 500 validation Images
   saved_model_path = tf.contrib.saved_model.save_keras_model(model, "./saved_models/")
+
   #print(history.history.keys())
   #print(saved_model_path)
 # =============================================================================
