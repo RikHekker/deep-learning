@@ -45,9 +45,9 @@ def read_image_and_label(image_path,label_path):
   image_tensor=tf.math.divide(image_tensor,255) #normalize
   #image_tensor = 2*image_tensor-1
   image_tensor = tf.cast(image_tensor, tf.float32)
-  image_tensor=tf.image.resize_image_with_crop_or_pad(image_tensor,512,1024)
+  image_tensor=tf.image.resize_image_with_crop_or_pad(image_tensor,256,512)
   label_tensor=tf.image.decode_image(tf.io.read_file(label_path))
-  label_tensor=tf.image.resize_image_with_crop_or_pad(label_tensor,512,1024)
+  label_tensor=tf.image.resize_image_with_crop_or_pad(label_tensor,256,512)
   label_tensor = tf.cast(label_tensor, tf.int32)
   new_cids =[0,0,0,0,0,0,0,1,2,0,0,3,4,5,0,0,0,6,0,7,8,9,10,11,12,13,14,15,16,0,0,17,18,19,0]
   label_new =tf.gather(new_cids, label_tensor)
@@ -132,14 +132,14 @@ def TheModel(batch_size_,restore):
       model = tf.contrib.saved_model.load_keras_model('./saved_models/1560507394')
   else:
       model=tf.keras.models.Sequential()
-      inputs=tf.keras.layers.Input(shape=(512,1024,3))
+      inputs=tf.keras.layers.Input(shape=(256,512,3))
       model.add(ResNet50(include_top=False, weights='imagenet',input_tensor=inputs, pooling=None, classes = 20))
       #kernel_constraint = tf.keras.constraints.max_norm(1.),activation = 'relu',kernel_regularizer = k.regularizers.l2(l=0.1)
       model.add(tf.keras.layers.Conv2D(20,(3,3)))
       #model.add(tf.keras.layers.Dense(units = 20))
       model.add(layers.BatchNormalization())   
       #model.add(layers.Dropout(rate=0.5))
-      model.add(tf.keras.layers.Lambda(lambda x: tf.image.resize_bilinear(x,(512,1024))))
+      model.add(tf.keras.layers.Lambda(lambda x: tf.image.resize_bilinear(x,(256,512))))
       #model.add(tf.keras.layers.Softmax(axis=-1))
       model.summary()
   #global_step = tf.Variable(0, trainable=False)
